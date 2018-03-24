@@ -8,7 +8,7 @@ function initMap() {
         center: {lat: 32.884580, lng: -96.920761},
         zoom: 20,
         styles: styles
-    })
+    });
     largeInfowindow = new google.maps.InfoWindow();
     bounds = new google.maps.LatLngBounds();
 
@@ -128,7 +128,7 @@ var ViewModel = function() {
         }
         self.markerList().forEach(function(location) {
             location.visible(true);
-        })
+        });
         return self.markerList();
     }, self);
 };
