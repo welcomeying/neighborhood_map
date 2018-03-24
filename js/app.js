@@ -23,7 +23,7 @@ function populateInfoWindow(marker, street, city, URL, infowindow) {
             infowindow.setMarker = null;
         });
         var windowContent = '<h4>' + marker.title + '</h4>' + 
-            '<p>' + street + '<br>' + city + '</p>' + '<a href="'+ URL +'"">' + URL + '</a>';
+            '<p>' + street + '<br>' + city + '</p>' + '<a href="'+ URL +'" target="blank">' + URL + '</a>';
         infowindow.setContent(windowContent);
         infowindow.open(map, marker);
     }
@@ -38,7 +38,7 @@ function toggleBounce(marker) {
       marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() {
         marker.setAnimation(null);
-    }, 2000);
+    }, 2100);
     }
 }
 
@@ -52,63 +52,58 @@ googleError = function googleError() {
 // Location model
 var Location = function(data) {
     var self = this;
-    this.title = data.title;
-    this.position = data.location;
+    self.title = data.title;
+    self.position = data.location;
     // Create ko observable variable
-    this.visible=ko.observable(true);
+    self.visible=ko.observable(true);
     // Foursquare API variables
     clientId = "UVZ4WJHDU3QSIHZ2SMGJSE2GZDJV1GF31H5NLWL532CQPQYF";
     clientSecret = "DD0AWZH35WO1KHCGQFE5ZVDJMUSBRGKU1GREAHVGHZ02ACZA";
-    var foursquareURL = 'https://api.foursquare.com/v2/venues/search?ll='+ this.position.lat + ',' + this.position.lng + '&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=20180324' + '&query=' + this.title;
+    var foursquareURL = 'https://api.foursquare.com/v2/venues/search?ll='+ self.position.lat + ',' + self.position.lng + '&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=20180324' + '&query=' + this.title;
     
     // Get JSON request of Foursquare
     $.getJSON(foursquareURL).done(function(data) {
-        var response = data.response.venues[0];
-        self.street = response.location.formattedAddress[0];
-        self.city = response.location.formattedAddress[1];
-        self.URL = response.url;
-        if (typeof self.URL === 'undefined'){
-            self.URL = "";
-        }
+        var response = data.response.venues[0] || "";
+        self.street = response.location.formattedAddress[0] || "";
+        self.city = response.location.formattedAddress[1] || "";
+        self.URL = response.url || "";
     }).fail(function() {
         alert("Oops. Foursquare did not load. Please refresh the page and try again!");
     });
 
     // Create google marker
-    this.marker = new google.maps.Marker({
+    self.marker = new google.maps.Marker({
         map: map,
-        position: this.position,
-        title: this.title,
+        position: self.position,
+        title: self.title,
         animation:google.maps.Animation.DROP
     });
     // Extend the boundaries of the map for each marker
-    bounds.extend(this.position);
+    bounds.extend(self.position);
     map.fitBounds(bounds);
     // Bounce a marker and show its infowindow when click
-    this.marker.addListener('click', function(){
+    self.marker.addListener('click', function(){
         populateInfoWindow(this, self.street, self.city, self.URL, largeInfowindow);
         toggleBounce(this);
     });
-    // Bounce a marker and show its infowindow when click from the list
-    this.show = function(location) {
-        google.maps.event.trigger(self.marker, 'click');
-    };
+
     // Show visible markers on map
-    this.showVisible = ko.computed(function() {
-        if(!self.visible()) {
-            self.marker.setMap(null);
-        }
-        else {
-            self.marker.setMap(map);
-        }
-    }, this);
+    self.showVisible = ko.computed(function() {
+        self.marker.setVisible(self.visible());
+    }, self);
 };
+
+// Bounce a marker and show its infowindow when click from the list
+Location.prototype.show = function() {
+    var self = this;
+    google.maps.event.trigger(self.marker, 'click');
+}
 
 // ViewModel
 var ViewModel = function() {
     var self = this;
-    this.searchTerm = ko.observable('');
-    this.markerList = ko.observableArray([]);
+    self.searchTerm = ko.observable('');
+    self.markerList = ko.observableArray([]);
 
     // Add all markers
     locations.forEach(function(location){
@@ -116,7 +111,7 @@ var ViewModel = function() {
     });
 
     // Filter markerList by search
-    this.filteredList = ko.computed(function() {
+    self.filteredList = ko.computed(function() {
         var filter = self.searchTerm().toLowerCase();
         if(filter) {
             return ko.utils.arrayFilter(self.markerList(),function(location) {
