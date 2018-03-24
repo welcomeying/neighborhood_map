@@ -15,12 +15,15 @@ Develop a single page application featuring a map of your neighborhood or a neig
 - [Foursquare API](https://developer.foursquare.com)
 
 ## How to run project
+Click the link to see the site on GitHub Pages: [https://welcomeying.github.io/neighborhood_map/](https://welcomeying.github.io/neighborhood_map/)
+
+Steps to run in your local machine:
 1. Clone or download project files in this repository.
 2. Open the `index.html` file.
 3. Click on any of the markered locations on the map or sidebar for more information.
 4. You can filter locations by typing location names in top left box.
 
 ## Reference materials
-[Bootstrap Sidebar Tutorial](https://bootstrapious.com/p/bootstrap-sidebar)
-[w3schools](https://www.w3schools.com)
-[Todo MVC Knockout Example](http://todomvc.com/examples/knockoutjs/)
+- [Bootstrap Sidebar Tutorial](https://bootstrapious.com/p/bootstrap-sidebar)
+- [w3schools](https://www.w3schools.com)
+- [Todo MVC Knockout Example](http://todomvc.com/examples/knockoutjs/)
